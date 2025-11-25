@@ -1,2 +1,2 @@
-# Tarot-Flashcard-Web-Group-Project
+# Burmese-Consonant-Flashcard-Web-Project
 OOP in class group assignment project
