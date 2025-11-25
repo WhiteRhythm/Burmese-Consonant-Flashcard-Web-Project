@@ -1,129 +1,62 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Welcome to Global Academy</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      height: 100vh;
-      font-family: 'Poppins', sans-serif;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: linear-gradient(135deg, #74ABE2, #5563DE);
-      color: #fff;
-    }
-    .container {
-      text-align: center;
-      background: rgba(255, 255, 255, 0.1);
-      padding: 40px 60px;
-      border-radius: 20px;
-      backdrop-filter: blur(8px);
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
-    }
-    h1 {
-      font-size: 2.5rem;
-      margin-bottom: 10px;
-    }
-    p {
-      font-size: 1.2rem;
-      color: #e2e2e2;
-      margin-bottom: 30px; /* Added space for buttons */
-    }
-
-    /* --- New Button Styles --- */
-    .button-container {
-      display: flex;
-      flex-direction: column; /* Stack buttons vertically on mobile */
-      gap: 15px;
-    }
-
-    .btn {
-      font-family: 'Poppins', sans-serif;
-      font-weight: 600;
-      font-size: 1.1rem;
-      padding: 14px 20px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      text-decoration: none; /* For the 'a' tag */
-      display: block; /* Make 'a' tag behave like button */
-    }
-
-    .btn-primary {
-      background: #5563DE;
-      color: #fff;
-    }
-    .btn-primary:hover {
-      background: #4a56c4;
-    }
-
-    .btn-secondary {
-      background: rgba(255, 255, 255, 0.8);
-      color: #333;
-    }
-    .btn-secondary:hover {
-      background: rgba(255, 255, 255, 1);
-    }
-
-    /* --- New Output Style --- */
-    #output {
-      margin-top: 25px;
-      font-size: 1.5rem;
-      font-weight: 600;
-      min-height: 2.5rem; /* Reserve space */
-    }
-    
-    /* Make buttons side-by-side on wider screens */
-    @media (min-width: 600px) {
-      .button-container {
-        flex-direction: row;
-      }
-      .btn {
-        width: 100%;
-      }
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <h1>Hello, Welcome to Global Academy</h1>
-    <p>Empowering minds for a digital future.</p>
-
-    <!-- New Buttons -->
-    <div class="button-container">
-      <button id="randButton" class="btn btn-secondary">Get a random number</button>
-      <a href="login.html" class="btn btn-primary">Login</a>
-    </div>
-
-    <!-- New Output Area -->
-    <div id="output"></div>
-  </div>
-
-  <script>
-    document.getElementById("randButton").addEventListener("click", async () => {
-      const output = document.getElementById("output");
-      output.textContent = "Loading...";
-
-      try {
-        const res = await fetch("/random"); // Fetch from your server's endpoint
-        if (!res.ok) {
-          throw new Error(`HTTP error! Status: ${res.status}`);
-        }
-        const data = await res.json();
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Burmese Mastery</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Padauk:wght@400;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <style>
+        body { font-family: 'Lato', sans-serif; }
+        h1, h2, h3 { font-family: 'Playfair Display', serif; }
+        .burmese-text { font-family: 'Padauk', sans-serif; }
         
-        // Display the random number
-        output.textContent = `Your random number is: ${data.number}`;
+        /* Deep Burgundy Background */
+        .bg-pattern {
+            background-color: #4a0404;
+            background-image: radial-gradient(circle at 100% 100%, #7d1c1c 0, #4a0404 50%, #2b0202 100%);
+        }
+        
+        .gold-gradient {
+            background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%);
+        }
+        
+        .gold-text {
+            background: linear-gradient(to right, #fcd34d, #f59e0b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
+</head>
+<body class="bg-pattern min-h-screen flex flex-col items-center justify-center text-white p-6 relative overflow-hidden">
 
-      } catch (err) {
-        output.textContent = "Error: " + err;
-      }
-    });
-  </script>
+    <!-- Decorative Glows -->
+    <div class="absolute top-0 left-0 w-64 h-64 bg-red-600 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse"></div>
+    <div class="absolute bottom-0 right-0 w-64 h-64 bg-yellow-600 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse"></div>
+
+    <div class="z-10 text-center max-w-lg w-full bg-white/5 backdrop-blur-lg border border-white/10 rounded-2xl p-10 shadow-2xl">
+        <div class="mb-6 flex justify-center">
+            <div class="w-20 h-20 rounded-full gold-gradient flex items-center justify-center shadow-lg border-4 border-red-900 transform hover:rotate-12 transition-transform duration-500">
+                <span class="burmese-text text-4xl text-red-900 font-bold pt-1">က</span>
+            </div>
+        </div>
+
+        <h1 class="text-5xl font-bold mb-2 gold-text tracking-wide">Burmese Mastery</h1>
+        <p class="text-gray-300 text-lg mb-8 font-light italic">Unlock the beauty of the Golden Script.</p>
+
+        <div class="flex flex-col gap-4">
+            <a href="login.html" class="group relative inline-flex items-center justify-center px-8 py-3 text-lg font-bold text-red-900 transition-all duration-200 bg-gradient-to-r from-amber-200 to-amber-500 rounded-lg hover:scale-105 shadow-lg">
+                <span>Student Login</span>
+                <i class="ph-bold ph-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
+            </a>
+            
+            <a href="flashcard.html" class="text-amber-400/80 hover:text-amber-300 text-sm font-semibold tracking-wider uppercase transition-colors">
+                Quick Practice (No Login)
+            </a>
+        </div>
+        
+        <div class="mt-8 text-xs text-gray-500 uppercase tracking-widest">Global Academy Project</div>
+    </div>
 </body>
 </html>
