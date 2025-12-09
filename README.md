@@ -1,5 +1,5 @@
 # Burmese-Consonant-Flashcard-Web-Project
-## OOP in class group assignment project
+## OOP group assignment project
 Welcome to the Burmese-Consonant-Flashcard-Web-Project wiki!
 
 This project is a simple, interactive learning tool designed to help students practice and memorize Burmese consonants in an easy and enjoyable way. It combines clean UI design, basic authentication, and a responsive flashcard system to create a smooth learning experience for both logged-in students and visitors who just want to practice quickly.
