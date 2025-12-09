@@ -45,6 +45,7 @@
             color: rgba(255,255,255,0.3);
             transition: all 0.3s ease;
         }
+        /* Style for 'Learned' (Remembered) cards */
         .grid-cell.learned {
             background: linear-gradient(135deg, #fbbf24, #d97706);
             color: #4a0404;
@@ -57,15 +58,12 @@
             z-index: 10;
         }
 
-        /* Description Fade In */
         .fade-in { animation: fadeIn 0.4s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
         
-        /* Custom Scrollbar for Description */
         .custom-scrollbar::-webkit-scrollbar { width: 6px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.05); }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(251, 191, 36, 0.3); border-radius: 10px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(251, 191, 36, 0.5); }
     </style>
 </head>
 <body class="bg-pattern min-h-screen flex flex-col text-white overflow-hidden">
@@ -77,6 +75,7 @@
             <span class="font-bold text-amber-500 tracking-wider">Burmese Mastery</span>
         </div>
         <div class="flex items-center gap-4">
+            <button onclick="resetProgress()" class="text-xs text-amber-500/50 hover:text-amber-400 underline">Reset Progress</button>
             <span class="text-sm text-gray-400">Scholar: <span id="userDisplay" class="text-white">Guest</span></span>
             <button onclick="logout()" class="text-gray-400 hover:text-red-400 transition-colors" title="Logout">
                 <i class="ph-bold ph-sign-out text-xl"></i>
@@ -84,59 +83,73 @@
         </div>
     </header>
 
-    <!-- MAIN LAYOUT: Adjusted for Symmetrical Sides and Large Center -->
+    <!-- MAIN LAYOUT -->
     <main class="flex-1 w-full max-w-[1600px] mx-auto p-4 flex flex-row items-center justify-center gap-8 h-[calc(100vh-60px)]">
         
-        <!-- COLUMN 1: Consonant Table (Left) - Size: 25% -->
+        <!-- COLUMN 1: Progress Map -->
         <div class="flex flex-col items-center justify-center h-full w-[25%] min-w-[300px]">
-            <!-- Updated style to match Right Box (Glass effect) -->
             <div class="w-full bg-black/40 backdrop-blur-md border border-amber-500/30 rounded-2xl p-6 shadow-lg max-h-[80vh] flex flex-col">
                 <h3 class="serif-font text-amber-500/80 mb-4 tracking-widest text-xs uppercase text-center border-b border-amber-500/20 pb-2">Progress Map</h3>
                 <div class="flex-1 overflow-y-auto custom-scrollbar flex items-center justify-center">
                     <div id="consonantTable" class="consonant-grid"></div>
                 </div>
-                <div class="mt-4 pt-2 text-center text-xs text-gray-500 border-t border-white/5">Collected: <span id="progressCount" class="text-amber-400 font-bold">0</span> / 33</div>
+                <div class="mt-4 pt-2 text-center text-xs text-gray-500 border-t border-white/5">Mastered: <span id="progressCount" class="text-amber-400 font-bold">0</span> / 33</div>
             </div>
         </div>
 
-        <!-- COLUMN 2: Flashcard (Center) - Size: 50% (BIGGER) -->
+        <!-- COLUMN 2: Flashcard -->
         <div class="flex flex-col items-center justify-center h-full w-[50%]">
-            <div class="text-center mb-6">
-                <h2 class="serif-font text-4xl text-amber-100 italic">"The Golden Script"</h2>
-                <p class="text-amber-500/60 mt-2 text-xs uppercase tracking-widest">Tap card to reveal meaning</p>
+            
+            <!-- Success Message (Hidden by default) -->
+            <div id="completionMessage" class="hidden text-center animate-bounce">
+                <h2 class="text-5xl font-bold text-amber-400 mb-4">🎉 Mastery Complete! 🎉</h2>
+                <p class="text-xl text-gray-300">You have learned all 33 consonants.</p>
+                <button onclick="resetProgress()" class="mt-8 bg-white text-black font-bold py-3 px-8 rounded-full hover:bg-gray-200 transition">Start Over</button>
             </div>
 
-            <!-- Increased Card Size: 360px x 480px -->
-            <div id="cardContainer" class="relative w-[360px] h-[480px] cursor-pointer perspective-1000 group mb-8" onclick="flipCard()">
-                <div id="cardInner" class="relative w-full h-full transition-transform duration-700 transform-style-3d shadow-2xl rounded-3xl">
-                    <!-- Front -->
-                    <div class="absolute w-full h-full backface-hidden bg-gradient-to-br from-amber-50 to-amber-100 rounded-3xl flex flex-col items-center justify-center border-[10px] border-amber-600/20 card-shadow">
-                        <div class="absolute top-5 left-5 w-full h-full border border-amber-900/10 rounded-2xl pointer-events-none transform -translate-x-3 -translate-y-3"></div>
-                        <!-- Increased Font Size -->
-                        <h1 id="cardFront" class="burmese-font text-[11rem] text-red-900 leading-none drop-shadow-lg mt-[-20px]">...</h1>
-                        <div class="mt-10 text-amber-900/40 text-lg font-bold uppercase tracking-widest">Consonant</div>
-                    </div>
-                    <!-- Back -->
-                    <div class="absolute w-full h-full backface-hidden rotate-y-180 bg-gradient-to-br from-gray-900 to-black rounded-3xl border-4 border-amber-500/50 flex flex-col items-center justify-center p-10 text-center card-shadow">
-                        <i class="ph-fill ph-speaker-high text-amber-500 text-5xl mb-8 opacity-50"></i>
-                        <h2 id="cardBack" class="text-4xl text-white font-bold mb-6 serif-font leading-tight">...</h2>
-                        <p class="text-gray-400 text-base">Memorize the shape.</p>
+            <!-- Card UI Wrapper -->
+            <div id="flashcardWrapper" class="flex flex-col items-center w-full">
+                <div class="text-center mb-6">
+                    <h2 class="serif-font text-4xl text-amber-100 italic">"The Golden Script"</h2>
+                    <p class="text-amber-500/60 mt-2 text-xs uppercase tracking-widest">Tap card to reveal meaning</p>
+                </div>
+
+                <div id="cardContainer" class="relative w-[360px] h-[480px] cursor-pointer perspective-1000 group mb-8" onclick="flipCard()">
+                    <div id="cardInner" class="relative w-full h-full transition-transform duration-700 transform-style-3d shadow-2xl rounded-3xl">
+                        <!-- Front -->
+                        <div class="absolute w-full h-full backface-hidden bg-gradient-to-br from-amber-50 to-amber-100 rounded-3xl flex flex-col items-center justify-center border-[10px] border-amber-600/20 card-shadow">
+                            <div class="absolute top-5 left-5 w-full h-full border border-amber-900/10 rounded-2xl pointer-events-none transform -translate-x-3 -translate-y-3"></div>
+                            <h1 id="cardFront" class="burmese-font text-[11rem] text-red-900 leading-none drop-shadow-lg mt-[-20px]">...</h1>
+                            <div class="mt-10 text-amber-900/40 text-lg font-bold uppercase tracking-widest">Consonant</div>
+                        </div>
+                        <!-- Back -->
+                        <div class="absolute w-full h-full backface-hidden rotate-y-180 bg-gradient-to-br from-gray-900 to-black rounded-3xl border-4 border-amber-500/50 flex flex-col items-center justify-center p-10 text-center card-shadow">
+                            <i class="ph-fill ph-speaker-high text-amber-500 text-5xl mb-8 opacity-50"></i>
+                            <h2 id="cardBack" class="text-3xl text-white font-bold mb-6 serif-font leading-tight">...</h2>
+                            <p class="text-gray-400 text-base">Memorize the shape.</p>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Bigger Button to match Card -->
-            <button onclick="handleNext()" class="w-[360px] bg-amber-600 hover:bg-amber-500 text-white py-4 rounded-xl shadow-lg transition-all flex flex-col items-center gap-1 active:scale-95 group">
-                <span class="text-sm font-bold uppercase flex items-center gap-2">Next Card <i class="ph-bold ph-arrow-right group-hover:translate-x-1 transition-transform"></i></span>
-            </button>
+                <!-- BUTTONS ROW -->
+                <div class="flex gap-4 w-[360px]">
+                    <!-- Next Button -->
+                    <button onclick="handleNext()" class="flex-1 bg-gray-700 hover:bg-gray-600 text-white py-4 rounded-xl shadow-lg transition-all flex flex-col items-center gap-1 active:scale-95 group border border-white/10">
+                        <span class="text-sm font-bold uppercase flex items-center gap-2">Skip / Next <i class="ph-bold ph-arrow-right"></i></span>
+                    </button>
+                    
+                    <!-- I Remember Button -->
+                    <button onclick="markAsRemembered()" class="flex-1 bg-green-600 hover:bg-green-500 text-white py-4 rounded-xl shadow-lg transition-all flex flex-col items-center gap-1 active:scale-95 group border border-green-400/30">
+                        <span class="text-sm font-bold uppercase flex items-center gap-2"><i class="ph-bold ph-check-circle"></i> I Remember</span>
+                    </button>
+                </div>
+            </div>
         </div>
 
-        <!-- COLUMN 3: Description (Right) - Size: 25% (Matches Left) -->
+        <!-- COLUMN 3: Detailed Info -->
         <div class="flex flex-col items-center justify-center h-full w-[25%] min-w-[300px]">
             <div class="w-full bg-black/40 backdrop-blur-md border border-amber-500/30 rounded-2xl p-6 shadow-lg max-h-[80vh] flex flex-col relative overflow-hidden">
-                <!-- Decorative BG -->
                 <div class="absolute -top-10 -right-10 w-32 h-32 bg-amber-500/10 rounded-full blur-2xl"></div>
-
                 <div class="flex items-center gap-4 mb-6 border-b border-amber-500/20 pb-4 z-10">
                     <div class="w-12 h-12 bg-amber-500 rounded-lg flex items-center justify-center text-black font-bold text-2xl burmese-font shadow-lg shrink-0" id="descIcon">?</div>
                     <div>
@@ -144,16 +157,10 @@
                         <span class="text-[10px] text-amber-500/60 uppercase tracking-wider">Linguistic Data</span>
                     </div>
                 </div>
-                
                 <div class="flex-1 overflow-y-auto pr-2 z-10 custom-scrollbar">
-                    <p id="descText" class="text-gray-200 leading-relaxed burmese-font text-lg fade-in whitespace-pre-wrap">
-                        Loading...
-                    </p>
+                    <p id="descText" class="text-gray-200 leading-relaxed burmese-font text-lg fade-in whitespace-pre-wrap">Loading...</p>
                 </div>
-
-                <div class="mt-6 pt-4 text-[10px] text-gray-500 italic border-t border-white/5 z-10">
-                    * Pronunciation based on standard Myanmar grammar.
-                </div>
+                <div class="mt-6 pt-4 text-[10px] text-gray-500 italic border-t border-white/5 z-10">* Pronunciation based on standard Myanmar grammar.</div>
             </div>
         </div>
 
@@ -161,21 +168,19 @@
 
     <script>
         const username = localStorage.getItem('username');
-        if (username) {
-             document.getElementById('userDisplay').textContent = username;
-        }
+        if (username) { document.getElementById('userDisplay').textContent = username; }
 
-        // --- TABLE SETUP ---
+        // --- DATA SETUP ---
         const allConsonants = [
-            "က", "ခ", "ဂ", "ဃ", "င",
-            "စ", "ဆ", "ဇ", "ဈ", "ည",
-            "ဋ", "ဌ", "ဍ", "ဎ", "ဏ",
-            "တ", "ထ", "ဒ", "ဓ", "န",
-            "ပ", "ဖ", "ဗ", "ဘ", "မ",
-            "ယ", "ရ", "လ", "ဝ", "သ",
+            "က", "ခ", "ဂ", "ဃ", "င", "စ", "ဆ", "ဇ", "ဈ", "ည",
+            "ဋ", "ဌ", "ဍ", "ဎ", "ဏ", "တ", "ထ", "ဒ", "ဓ", "န",
+            "ပ", "ဖ", "ဗ", "ဘ", "မ", "ယ", "ရ", "လ", "ဝ", "သ",
             "ဟ", "ဠ", "အ"
         ];
-        const learnedSet = new Set(); 
+        
+        // Load learned items from LocalStorage so it persists on refresh
+        let learnedList = JSON.parse(localStorage.getItem('burmeseLearned')) || [];
+        let currentCardFront = ""; // To track what we are looking at
 
         function initTable() {
             const grid = document.getElementById('consonantTable');
@@ -187,18 +192,46 @@
                 cell.textContent = '?';
                 grid.appendChild(cell);
             });
+            // Restore progress visually
+            learnedList.forEach(char => updateTableVisuals(char));
+            updateProgressCount();
         }
         initTable();
 
-        function markAsLearned(char) {
+        function updateTableVisuals(char) {
             const cell = document.getElementById('cell-' + char);
             if (cell) {
                 cell.classList.add('learned');
                 cell.textContent = char;
-                if (!learnedSet.has(char)) {
-                    learnedSet.add(char);
-                    document.getElementById('progressCount').textContent = learnedSet.size;
-                }
+            }
+        }
+
+        function updateProgressCount() {
+            document.getElementById('progressCount').textContent = learnedList.length;
+        }
+
+        // --- MAIN FUNCTION: MARK AS REMEMBERED ---
+        function markAsRemembered() {
+            if (!currentCardFront) return;
+
+            // 1. Add to learned list if not already there
+            if (!learnedList.includes(currentCardFront)) {
+                learnedList.push(currentCardFront);
+                localStorage.setItem('burmeseLearned', JSON.stringify(learnedList));
+                
+                // 2. Update Visuals
+                updateTableVisuals(currentCardFront);
+                updateProgressCount();
+            }
+
+            // 3. Move to next card
+            handleNext();
+        }
+
+        function resetProgress() {
+            if(confirm("Reset all progress?")) {
+                localStorage.removeItem('burmeseLearned');
+                window.location.reload();
             }
         }
 
@@ -206,30 +239,40 @@
         let isFlipped = false;
 
         async function fetchCard() {
+            // Check if user mastered everything
+            if (learnedList.length >= allConsonants.length) {
+                document.getElementById('flashcardWrapper').classList.add('hidden');
+                document.getElementById('completionMessage').classList.remove('hidden');
+                return;
+            }
+
             try {
+                // Fetch random card from server
                 const res = await fetch('/flashcard');
                 const data = await res.json();
                 
+                // === SMART FILTERING ===
+                // If we pulled a card we already learned, fetch again immediately!
+                if (learnedList.includes(data.front)) {
+                    console.log("Skipping learned card: " + data.front);
+                    fetchCard(); // Recursive call to get a fresh one
+                    return;
+                }
+
+                currentCardFront = data.front; // Store current card ID
+
                 const updateUI = () => {
                     document.getElementById('cardFront').textContent = data.front;
                     document.getElementById('cardBack').textContent = data.back;
                     
-                    // Update Description
                     const descEl = document.getElementById('descText');
+                    descEl.textContent = data.description || "No description available.";
                     
-                    if (data.description) {
-                        descEl.textContent = data.description;
-                    } else {
-                        descEl.textContent = "No description available in server data.";
-                    }
-                    
-                    // Re-trigger animation
                     descEl.classList.remove('fade-in');
                     void descEl.offsetWidth; 
                     descEl.classList.add('fade-in');
                     
                     document.getElementById('descIcon').textContent = data.front;
-                    markAsLearned(data.front);
                 };
 
                 if (isFlipped) {
@@ -240,6 +283,8 @@
                 
             } catch (e) {
                 console.error("Connection failed", e);
+                // Demo fallback
+                currentCardFront = "က";
                 document.getElementById('cardFront').textContent = "က";
                 document.getElementById('descText').textContent = "Server connection failed.";
             }
@@ -271,7 +316,7 @@
             if (window.location.protocol !== 'file:') {
                 window.location.href = 'login.html';
             } else {
-                alert("Logged out (Demo Mode)");
+                alert("Logged out");
                 window.location.reload();
             }
         }
